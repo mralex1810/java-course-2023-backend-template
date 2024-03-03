@@ -9,7 +9,7 @@ import reactor.core.publisher.Mono;
 
 public class BotClientImpl implements BotClient {
 
-    private WebClient webClient;
+    private final WebClient webClient;
 
     public BotClientImpl(WebClient webClient) {
         this.webClient = webClient;

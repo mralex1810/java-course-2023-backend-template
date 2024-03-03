@@ -27,8 +27,6 @@ public class UpdateController {
                                   schema = @Schema(implementation = ApiErrorResponse.class))})})
     @PostMapping
     public ResponseEntity<?> sendUpdate(@RequestBody LinkUpdateRequest linkUpdateRequest) {
-        // Implement the logic to process the update
-        // return ResponseEntity right status according to the processing result
         return ResponseEntity.status(HttpStatus.OK).build();
     }
 }

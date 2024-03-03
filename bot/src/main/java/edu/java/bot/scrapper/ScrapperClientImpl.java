@@ -13,7 +13,7 @@ import reactor.core.publisher.Mono;
 
 public class ScrapperClientImpl implements ScrapperClient {
 
-    private WebClient webClient;
+    private final WebClient webClient;
 
     public ScrapperClientImpl(WebClient webClient) {
         this.webClient = webClient;
