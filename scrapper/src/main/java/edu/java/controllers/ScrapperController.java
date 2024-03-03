@@ -25,6 +25,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ScrapperController {
 
+    public static final String DUMMY_SITE = "https://blabla.com";
+
     @Operation(summary = "Зарегистрировать чат")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Чат зарегистрирован"),
@@ -101,7 +103,7 @@ public class ScrapperController {
                    schema = @Schema(type = "Integer"))
         Long tgChatId
     ) {
-        return ResponseEntity.ok().body(new LinkResponse(0L, URI.create("https://blabla.com")));
+        return ResponseEntity.ok().body(new LinkResponse(0L, URI.create(DUMMY_SITE)));
     }
 
     @Operation(summary = "Убрать отслеживание ссылки")
@@ -125,6 +127,6 @@ public class ScrapperController {
                    schema = @Schema(type = "Integer"))
         Long tgChatId
     ) {
-        return ResponseEntity.ok().body(new LinkResponse(0L, URI.create("https://blabla.com")));
+        return ResponseEntity.ok().body(new LinkResponse(0L, URI.create(DUMMY_SITE)));
     }
 }

@@ -13,6 +13,9 @@ import reactor.core.publisher.Mono;
 
 public class ScrapperClientImpl implements ScrapperClient {
 
+    public static final String TG_CHAT_ID_PATH = "/tg-chat/{id}";
+    public static final String LINKS = "/links";
+    public static final String TG_CHAT_ID_HEADER = "Tg-Chat-Id";
     private final WebClient webClient;
 
     public ScrapperClientImpl(WebClient webClient) {
@@ -34,7 +37,7 @@ public class ScrapperClientImpl implements ScrapperClient {
     @Override
     public Void postChat(long id) {
         return webClient.post()
-            .uri("/tg-chat/{id}", id)
+            .uri(TG_CHAT_ID_PATH, id)
             .exchangeToMono(clientResponse -> toResponseBodyMono(clientResponse, Void.class))
             .block();
     }
@@ -42,7 +45,7 @@ public class ScrapperClientImpl implements ScrapperClient {
     @Override
     public Void deleteChat(long id) {
         return webClient.delete()
-            .uri("/tg-chat/{id}", id)
+            .uri(TG_CHAT_ID_PATH, id)
             .exchangeToMono(clientResponse -> toResponseBodyMono(clientResponse, Void.class))
             .block();
     }
@@ -50,8 +53,8 @@ public class ScrapperClientImpl implements ScrapperClient {
     @Override
     public ScrapperLinkResponse postLink(long chatId, ScrapperAddLinkRequest addLinkRequest) {
         return webClient.post()
-            .uri("/links")
-            .header("Tg-Chat-Id", Long.toString(chatId))
+            .uri(LINKS)
+            .header(TG_CHAT_ID_HEADER, Long.toString(chatId))
             .bodyValue(addLinkRequest)
             .exchangeToMono(clientResponse -> toResponseBodyMono(clientResponse, ScrapperLinkResponse.class))
             .block();
@@ -60,8 +63,8 @@ public class ScrapperClientImpl implements ScrapperClient {
     @Override
     public ScrapperLinkResponse deleteLink(long chatId, ScrapperRemoveLinkRequest removeLinkRequest) {
         return webClient.method(HttpMethod.DELETE)
-            .uri("/links")
-            .header("Tg-Chat-Id", Long.toString(chatId))
+            .uri(LINKS)
+            .header(TG_CHAT_ID_HEADER, Long.toString(chatId))
             .bodyValue(removeLinkRequest)
             .exchangeToMono(clientResponse -> toResponseBodyMono(clientResponse, ScrapperLinkResponse.class))
             .block();
@@ -70,8 +73,8 @@ public class ScrapperClientImpl implements ScrapperClient {
     @Override
     public ScrapperListLinksResponse getAllLinks(long chatId) {
         return webClient.get()
-            .uri("/links")
-            .header("Tg-Chat-Id", Long.toString(chatId))
+            .uri(LINKS)
+            .header(TG_CHAT_ID_HEADER, Long.toString(chatId))
             .exchangeToMono(clientResponse -> toResponseBodyMono(clientResponse, ScrapperListLinksResponse.class))
             .block();
     }
