@@ -5,6 +5,10 @@ import edu.java.controllers.dto.ApiErrorResponse;
 import edu.java.controllers.dto.LinkResponse;
 import edu.java.controllers.dto.ListLinksResponse;
 import edu.java.controllers.dto.RemoveLinkRequest;
+import edu.java.exceptions.AlreadyRegisteredChatException;
+import edu.java.exceptions.ChatNotFoundException;
+import edu.java.exceptions.LinkNotFoundException;
+import edu.java.exceptions.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -13,14 +17,18 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
 import java.util.List;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestHeader;
+import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
 @RestController
 public class ScrapperController {
@@ -42,7 +50,7 @@ public class ScrapperController {
         @PathVariable
         @Parameter(description = "The ID of the chat to register", required = true, schema = @Schema(type = "Integer"))
         Long id
-    ) {
+    ) throws AlreadyRegisteredChatException {
         return ResponseEntity.ok().build();
     }
 
@@ -61,7 +69,7 @@ public class ScrapperController {
         @PathVariable
         @Parameter(description = "The ID of the chat to delete", required = true, schema = @Schema(type = "Integer"))
         Long id
-    ) {
+    ) throws ChatNotFoundException {
         return ResponseEntity.ok().build();
     }
 
@@ -126,7 +134,37 @@ public class ScrapperController {
                    required = true,
                    schema = @Schema(type = "Integer"))
         Long tgChatId
-    ) {
+    ) throws LinkNotFoundException {
         return ResponseEntity.ok().body(new LinkResponse(0L, URI.create(DUMMY_SITE)));
+    }
+
+    @ExceptionHandler(MethodArgumentTypeMismatchException.class)
+    @ResponseStatus(value = HttpStatus.BAD_REQUEST)
+    public ApiErrorResponse handleMethodArgumentTypeMismatch(MethodArgumentTypeMismatchException e) {
+        String error = e.getName() + " should be of type " + e.getRequiredType().getName();
+
+        return new ApiErrorResponse(error, HttpStatus.BAD_REQUEST, e);
+    }
+
+    @ExceptionHandler(AlreadyRegisteredChatException.class)
+    @ResponseStatus(value = HttpStatus.CONFLICT)
+    public ApiErrorResponse handleResourceConflict(AlreadyRegisteredChatException e) {
+        return new ApiErrorResponse("Chat already registered", HttpStatus.CONFLICT, e);
+    }
+
+    @ExceptionHandler(ResourceNotFoundException.class)
+    @ResponseStatus(value = HttpStatus.NOT_FOUND)
+    public ApiErrorResponse handleResourceNotFound(ResourceNotFoundException e) {
+        return new ApiErrorResponse("Resource not found", HttpStatus.NOT_FOUND, e);
+    }
+
+    @ExceptionHandler(RuntimeException.class)
+    @ResponseStatus(value = HttpStatus.INTERNAL_SERVER_ERROR)
+    public ApiErrorResponse handleRuntimeException(RuntimeException e) {
+        return new ApiErrorResponse(
+            "An unexpected error occurred. Please try again later.",
+            HttpStatus.INTERNAL_SERVER_ERROR,
+            e
+        );
     }
 }
