@@ -68,7 +68,7 @@ public class LinkDAOTest extends IntegrationTest {
         );
         linkRepository.add(newLink);
 
-        List<Link> links = jdbcTemplate.query("SELECT * FROM links", linkRepository.LINK_ROW_MAPPER);
+        List<Link> links = jdbcTemplate.query("SELECT * FROM links", LinkDAO.LINK_ROW_MAPPER);
         Assertions.assertTrue(links.stream().anyMatch(link -> link.uri().equals(newLink.uri())));
     }
 
@@ -76,12 +76,12 @@ public class LinkDAOTest extends IntegrationTest {
     @Transactional
     @Rollback
     void removeTest() {
-        List<Link> links = jdbcTemplate.query("SELECT * FROM links", linkRepository.LINK_ROW_MAPPER);
+        List<Link> links = jdbcTemplate.query("SELECT * FROM links", LinkDAO.LINK_ROW_MAPPER);
         Long idToRemove = links.getFirst().id();
 
         linkRepository.remove(idToRemove);
 
-        links = jdbcTemplate.query("SELECT * FROM links", linkRepository.LINK_ROW_MAPPER);
+        links = jdbcTemplate.query("SELECT * FROM links", LinkDAO.LINK_ROW_MAPPER);
         Assertions.assertTrue(links.stream().noneMatch(link -> link.id().equals(idToRemove)));
     }
 
@@ -90,7 +90,7 @@ public class LinkDAOTest extends IntegrationTest {
     @Rollback
     void findAllTest() {
         List<Link> actual = linkRepository.findAll();
-        List<Link> expected = jdbcTemplate.query("SELECT * FROM links", linkRepository.LINK_ROW_MAPPER);
+        List<Link> expected = jdbcTemplate.query("SELECT * FROM links", LinkDAO.LINK_ROW_MAPPER);
         Assertions.assertEquals(expected.size(), actual.size());
     }
 
@@ -100,7 +100,7 @@ public class LinkDAOTest extends IntegrationTest {
     void findByUrlTest() {
         Optional<Link> actual = linkRepository.findByUrl("https://test.com");
         Link expected = jdbcTemplate.queryForObject(
-                "SELECT * FROM links WHERE uri = ?", linkRepository.LINK_ROW_MAPPER, "https://test.com");
+                "SELECT * FROM links WHERE uri = ?", LinkDAO.LINK_ROW_MAPPER, "https://test.com");
         Assertions.assertEquals(expected, actual.orElse(null));
     }
 
@@ -112,11 +112,13 @@ public class LinkDAOTest extends IntegrationTest {
         LocalDateTime newLinkCheckedAt = time.minusDays(1);
 
         Link linkToUpdate = jdbcTemplate.queryForObject(
-                "SELECT * FROM links WHERE uri = ?", linkRepository.LINK_ROW_MAPPER, "https://test.com");
+                "SELECT * FROM links WHERE uri = ?", LinkDAO.LINK_ROW_MAPPER, "https://test.com");
         if (linkToUpdate != null) {
             linkRepository.updateLinkMeta(linkToUpdate.id(), newLinkUpdatedAt, newLinkCheckedAt);
             Link updatedLink = jdbcTemplate.queryForObject(
-                    "SELECT * FROM links WHERE id = ?", linkRepository.LINK_ROW_MAPPER, linkToUpdate.id());
+                    "SELECT * FROM links WHERE id = ?",
+                    LinkDAO.LINK_ROW_MAPPER, linkToUpdate.id()
+            );
             Assertions.assertNotNull(updatedLink);
             Assertions.assertEquals(newLinkUpdatedAt, updatedLink.linkUpdatedAt());
             Assertions.assertEquals(newLinkCheckedAt, updatedLink.linkCheckedAt());
@@ -130,7 +132,7 @@ public class LinkDAOTest extends IntegrationTest {
         LocalDateTime checkedBefore = LocalDateTime.now();
         List<Link> actual = linkRepository.findAllCheckedBefore(checkedBefore);
         List<Link> expected = jdbcTemplate.query(
-                "SELECT * FROM links WHERE link_checked_at < ?", linkRepository.LINK_ROW_MAPPER, checkedBefore);
+                "SELECT * FROM links WHERE link_checked_at < ?", LinkDAO.LINK_ROW_MAPPER, checkedBefore);
         Assertions.assertEquals(expected.size(), actual.size());
     }
 }
