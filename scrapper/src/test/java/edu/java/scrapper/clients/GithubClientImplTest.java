@@ -2,8 +2,8 @@ package edu.java.scrapper.clients;
 
 import com.github.tomakehurst.wiremock.client.WireMock;
 import com.github.tomakehurst.wiremock.junit5.WireMockTest;
-import edu.java.clients.github.GithubClient;
-import edu.java.clients.github.GithubClientImpl;
+import edu.java.scrapper.clients.github.GithubClient;
+import edu.java.scrapper.clients.github.GithubClientImpl;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
