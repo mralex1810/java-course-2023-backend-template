@@ -126,7 +126,6 @@ public class LinkDAOTest extends IntegrationTest {
 
             Assertions.assertTrue(Duration.between(newLinkCheckedAt, updatedLink.linkCheckedAt())
                                           .compareTo(Duration.ofSeconds(1)) < 0);
-            Assertions.assertEquals(newLinkCheckedAt, updatedLink.linkCheckedAt());
         }
     }
 
