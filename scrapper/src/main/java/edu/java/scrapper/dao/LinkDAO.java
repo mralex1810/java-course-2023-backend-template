@@ -15,7 +15,7 @@ public class LinkDAO {
     private final JdbcTemplate jdbcTemplate;
 
     @VisibleForTesting
-    static final RowMapper<Link> linkRowMapper = (rs, rowNum) -> new Link(
+    static final RowMapper<Link> LINK_ROW_MAPPER = (rs, rowNum) -> new Link(
         rs.getLong("id"),
         rs.getString("uri"),
         rs.getTimestamp("link_updated_at").toLocalDateTime(),
@@ -45,7 +45,7 @@ public class LinkDAO {
 
     public List<Link> findAll() {
         String sql = "SELECT * FROM links";
-        return jdbcTemplate.query(sql, linkRowMapper);
+        return jdbcTemplate.query(sql, LINK_ROW_MAPPER);
     }
 
     public void remove(Long id) {
@@ -59,7 +59,7 @@ public class LinkDAO {
             FROM links
             WHERE uri = ?
             """;
-        return jdbcTemplate.query(sql, linkRowMapper, url).stream().findFirst();
+        return jdbcTemplate.query(sql, LINK_ROW_MAPPER, url).stream().findFirst();
     }
 
     public void updateLinkMeta(Long id, LocalDateTime linkUpdatedAt, LocalDateTime linkCheckedAt) {
@@ -77,6 +77,6 @@ public class LinkDAO {
             FROM links
             WHERE link_checked_at < ?
             """;
-        return jdbcTemplate.query(sql, linkRowMapper, dateTime);
+        return jdbcTemplate.query(sql, LINK_ROW_MAPPER, dateTime);
     }
 }

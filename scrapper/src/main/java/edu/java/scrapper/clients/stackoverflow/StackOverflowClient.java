@@ -3,7 +3,6 @@ package edu.java.scrapper.clients.stackoverflow;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import edu.java.scrapper.clients.ClientEntityResponse;
-
 import java.time.OffsetDateTime;
 
 public interface StackOverflowClient {

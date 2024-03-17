@@ -53,12 +53,12 @@ public class JdbcLinkServiceImpl implements LinkService {
     @Transactional
     public Link remove(long tgChatId, URI url) throws LinkNotFoundException, ChatNotFoundException {
         Chat chat = chatDAO.findById(tgChatId).orElseThrow(() ->
-            new ChatNotFoundException("Chat ID " + chatDAO + " not found"));
+            new ChatNotFoundException(String.format("Chat ID %d not found", tgChatId)));
         Link link = linkDAO.findByUrl(url.toString()).orElseThrow(() ->
-            new LinkNotFoundException("URL " + url + " not found"));
+            new LinkNotFoundException(String.format("URL %s not found", url)));
 
         if (!chatLinkSettingDAO.existsByLinkIdAndChatId(link.id(), chat.id())) {
-            throw new LinkNotFoundException("URL " + url + " isn't registered for " + tgChatId);
+            throw new LinkNotFoundException(String.format("URL %s isn't registered for %d", url, tgChatId));
         }
         chatLinkSettingDAO.remove(link.id(), chat.id());
 

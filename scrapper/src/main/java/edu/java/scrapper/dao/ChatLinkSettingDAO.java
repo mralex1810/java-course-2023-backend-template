@@ -11,7 +11,7 @@ import org.springframework.stereotype.Repository;
 public class ChatLinkSettingDAO {
 
     private final JdbcTemplate jdbcTemplate;
-    static final RowMapper<ChatLinkSetting> chatLinkSettingRowMapper = (rs, rowNum) -> new ChatLinkSetting(
+    static final RowMapper<ChatLinkSetting> CHAT_LINK_SETTING_ROW_MAPPER = (rs, rowNum) -> new ChatLinkSetting(
         rs.getLong("link_id"),
         rs.getLong("chat_id")
     );
@@ -27,7 +27,7 @@ public class ChatLinkSettingDAO {
 
     public List<ChatLinkSetting> findAll() {
         String sql = "SELECT link_id, chat_id FROM chats_links_settings";
-        return jdbcTemplate.query(sql, chatLinkSettingRowMapper);
+        return jdbcTemplate.query(sql, CHAT_LINK_SETTING_ROW_MAPPER);
     }
 
     public void remove(Long linkId, Long chatId) {
@@ -42,7 +42,7 @@ public class ChatLinkSettingDAO {
             INNER JOIN chats_links_settings cls ON l.id = cls.link_id
             WHERE cls.chat_id = ?
             """;
-        return jdbcTemplate.query(sql, LinkDAO.linkRowMapper, chatId);
+        return jdbcTemplate.query(sql, LinkDAO.LINK_ROW_MAPPER, chatId);
     }
 
     public boolean existsByLinkIdAndChatId(Long linkId, Long chatId) {

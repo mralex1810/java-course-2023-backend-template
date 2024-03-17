@@ -1,10 +1,11 @@
 package edu.java.scrapper.dao;
 
-import edu.java.scrapper.IntegrationTest;
-import edu.java.scrapper.model.Link;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+
+import edu.java.scrapper.IntegrationTest;
+import edu.java.scrapper.model.Link;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
@@ -63,7 +64,7 @@ public class LinkDAOTest extends IntegrationTest {
         );
         linkRepository.add(newLink);
 
-        List<Link> links = jdbcTemplate.query("SELECT * FROM links", linkRepository.linkRowMapper);
+        List<Link> links = jdbcTemplate.query("SELECT * FROM links", linkRepository.LINK_ROW_MAPPER);
         Assertions.assertTrue(links.stream().anyMatch(link -> link.uri().equals(newLink.uri())));
     }
 
@@ -71,12 +72,12 @@ public class LinkDAOTest extends IntegrationTest {
     @Transactional
     @Rollback
     void removeTest() {
-        List<Link> links = jdbcTemplate.query("SELECT * FROM links", linkRepository.linkRowMapper);
+        List<Link> links = jdbcTemplate.query("SELECT * FROM links", linkRepository.LINK_ROW_MAPPER);
         Long idToRemove = links.getFirst().id();
 
         linkRepository.remove(idToRemove);
 
-        links = jdbcTemplate.query("SELECT * FROM links", linkRepository.linkRowMapper);
+        links = jdbcTemplate.query("SELECT * FROM links", linkRepository.LINK_ROW_MAPPER);
         Assertions.assertTrue(links.stream().noneMatch(link -> link.id().equals(idToRemove)));
     }
 
@@ -85,7 +86,7 @@ public class LinkDAOTest extends IntegrationTest {
     @Rollback
     void findAllTest() {
         List<Link> actual = linkRepository.findAll();
-        List<Link> expected = jdbcTemplate.query("SELECT * FROM links", linkRepository.linkRowMapper);
+        List<Link> expected = jdbcTemplate.query("SELECT * FROM links", linkRepository.LINK_ROW_MAPPER);
         Assertions.assertEquals(expected.size(), actual.size());
     }
 
@@ -94,7 +95,8 @@ public class LinkDAOTest extends IntegrationTest {
     @Rollback
     void findByUrlTest() {
         Optional<Link> actual = linkRepository.findByUrl("https://test.com");
-        Link expected = jdbcTemplate.queryForObject("SELECT * FROM links WHERE uri = ?", linkRepository.linkRowMapper, "https://test.com");
+        Link expected = jdbcTemplate.queryForObject(
+                "SELECT * FROM links WHERE uri = ?", linkRepository.LINK_ROW_MAPPER, "https://test.com");
         Assertions.assertEquals(expected, actual.orElse(null));
     }
 
@@ -105,10 +107,12 @@ public class LinkDAOTest extends IntegrationTest {
         LocalDateTime newLinkUpdatedAt = LocalDateTime.now().minusDays(1);
         LocalDateTime newLinkCheckedAt = LocalDateTime.now().minusDays(1);
 
-        Link linkToUpdate = jdbcTemplate.queryForObject("SELECT * FROM links WHERE uri = ?", linkRepository.linkRowMapper, "https://test.com");
+        Link linkToUpdate = jdbcTemplate.queryForObject(
+                "SELECT * FROM links WHERE uri = ?", linkRepository.LINK_ROW_MAPPER, "https://test.com");
         if (linkToUpdate != null) {
             linkRepository.updateLinkMeta(linkToUpdate.id(), newLinkUpdatedAt, newLinkCheckedAt);
-            Link updatedLink = jdbcTemplate.queryForObject("SELECT * FROM links WHERE id = ?", linkRepository.linkRowMapper, linkToUpdate.id());
+            Link updatedLink = jdbcTemplate.queryForObject(
+                    "SELECT * FROM links WHERE id = ?", linkRepository.LINK_ROW_MAPPER, linkToUpdate.id());
             Assertions.assertNotNull(updatedLink);
             Assertions.assertEquals(newLinkUpdatedAt, updatedLink.linkUpdatedAt());
             Assertions.assertEquals(newLinkCheckedAt, updatedLink.linkCheckedAt());
@@ -121,7 +125,8 @@ public class LinkDAOTest extends IntegrationTest {
     void findAllCheckedBeforeTest() {
         LocalDateTime checkedBefore = LocalDateTime.now();
         List<Link> actual = linkRepository.findAllCheckedBefore(checkedBefore);
-        List<Link> expected = jdbcTemplate.query("SELECT * FROM links WHERE link_checked_at < ?", linkRepository.linkRowMapper, checkedBefore);
+        List<Link> expected = jdbcTemplate.query(
+                "SELECT * FROM links WHERE link_checked_at < ?", linkRepository.LINK_ROW_MAPPER, checkedBefore);
         Assertions.assertEquals(expected.size(), actual.size());
     }
 }

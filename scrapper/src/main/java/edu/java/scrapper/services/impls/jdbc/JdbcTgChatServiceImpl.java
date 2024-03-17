@@ -21,7 +21,7 @@ public class JdbcTgChatServiceImpl implements TgChatService {
         if (chatDAO.findById(tgChatId).isEmpty()) {
             chatDAO.add(new Chat(tgChatId));
         } else {
-            throw new AlreadyRegisteredChatException("Chat ID" + tgChatId + " already exists");
+            throw new AlreadyRegisteredChatException(String.format("Chat ID %d already exists", tgChatId));
         }
     }
 
@@ -31,7 +31,7 @@ public class JdbcTgChatServiceImpl implements TgChatService {
         if (chatDAO.findById(tgChatId).isPresent()) {
             chatDAO.remove(tgChatId);
         } else {
-            throw new ChatNotFoundException("Chat ID" + tgChatId + " not found");
+            throw new ChatNotFoundException(String.format("Chat ID %d not found", tgChatId));
         }
     }
 }

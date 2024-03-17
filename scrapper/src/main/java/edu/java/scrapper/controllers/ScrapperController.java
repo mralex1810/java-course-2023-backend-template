@@ -40,6 +40,7 @@ public class ScrapperController {
 
     private final LinkService linkService;
     private final TgChatService tgChatService;
+
     @Operation(summary = "Зарегистрировать чат")
     @ApiResponses(value = {
         @ApiResponse(responseCode = "200", description = "Чат зарегистрирован"),
