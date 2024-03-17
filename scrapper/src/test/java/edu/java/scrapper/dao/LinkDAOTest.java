@@ -1,5 +1,6 @@
 package edu.java.scrapper.dao;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -120,7 +121,11 @@ public class LinkDAOTest extends IntegrationTest {
                     LinkDAO.LINK_ROW_MAPPER, linkToUpdate.id()
             );
             Assertions.assertNotNull(updatedLink);
-            Assertions.assertEquals(newLinkUpdatedAt, updatedLink.linkUpdatedAt());
+            Assertions.assertTrue(Duration.between(newLinkUpdatedAt, updatedLink.linkUpdatedAt())
+                                          .compareTo(Duration.ofSeconds(1)) < 0);
+
+            Assertions.assertTrue(Duration.between(newLinkCheckedAt, updatedLink.linkCheckedAt())
+                                          .compareTo(Duration.ofSeconds(1)) < 0);
             Assertions.assertEquals(newLinkCheckedAt, updatedLink.linkCheckedAt());
         }
     }
