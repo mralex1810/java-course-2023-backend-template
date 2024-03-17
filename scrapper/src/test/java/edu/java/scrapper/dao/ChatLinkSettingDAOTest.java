@@ -1,11 +1,12 @@
 package edu.java.scrapper.dao;
 
+import java.time.LocalDateTime;
+import java.util.List;
+
 import edu.java.scrapper.IntegrationTest;
 import edu.java.scrapper.model.Chat;
 import edu.java.scrapper.model.ChatLinkSetting;
 import edu.java.scrapper.model.Link;
-import java.time.LocalDateTime;
-import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,6 +14,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.test.annotation.Rollback;
 import org.springframework.transaction.annotation.Transactional;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -37,12 +39,13 @@ public class ChatLinkSettingDAOTest extends IntegrationTest {
         linkDAO = new LinkDAO(jdbcTemplate);
 
         chat = new Chat(1L);
+        LocalDateTime time = LocalDateTime.now();
         link = new Link(
             2L,
             "http://example.com",
-            LocalDateTime.now(),
-            LocalDateTime.now(),
-            LocalDateTime.now(),
+                time,
+                time,
+                time,
             "test"
         );
 

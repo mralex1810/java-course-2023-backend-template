@@ -23,17 +23,20 @@ public class LinkDAOTest extends IntegrationTest {
     private JdbcTemplate jdbcTemplate;
     private LinkDAO linkRepository;
 
-    private Link testLink = new Link(
-        null,
-        "https://test.com",
-        LocalDateTime.now(),
-        LocalDateTime.now(),
-        LocalDateTime.now(),
-        "created_by"
-    );
+    private Link testLink;
+    private LocalDateTime time;
 
     @BeforeEach
     void setUp() {
+        time = LocalDateTime.now();
+        testLink = new Link(
+                null,
+                "https://test.com",
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                LocalDateTime.now(),
+                "created_by"
+        );
         linkRepository = new LinkDAO(jdbcTemplate);
         jdbcTemplate.update(
             "INSERT INTO links (uri, link_updated_at, link_checked_at, created_at, created_by) VALUES (?,?,?,?,?)",
@@ -54,12 +57,13 @@ public class LinkDAOTest extends IntegrationTest {
     @Transactional
     @Rollback
     void addTest() {
+        time = LocalDateTime.now();
         Link newLink = new Link(
             null,
             "https://newTest.com",
-            LocalDateTime.now(),
-            LocalDateTime.now(),
-            LocalDateTime.now(),
+                time,
+                time,
+                time,
             "created_by"
         );
         linkRepository.add(newLink);
@@ -104,8 +108,8 @@ public class LinkDAOTest extends IntegrationTest {
     @Transactional
     @Rollback
     void updateLinkMetaTest() {
-        LocalDateTime newLinkUpdatedAt = LocalDateTime.now().minusDays(1);
-        LocalDateTime newLinkCheckedAt = LocalDateTime.now().minusDays(1);
+        LocalDateTime newLinkUpdatedAt = time.minusDays(1);
+        LocalDateTime newLinkCheckedAt = time.minusDays(1);
 
         Link linkToUpdate = jdbcTemplate.queryForObject(
                 "SELECT * FROM links WHERE uri = ?", linkRepository.LINK_ROW_MAPPER, "https://test.com");
