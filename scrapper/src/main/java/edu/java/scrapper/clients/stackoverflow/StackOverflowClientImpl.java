@@ -5,12 +5,15 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.List;
 import org.springframework.web.reactive.function.client.WebClient;
+import reactor.util.retry.Retry;
 
 public class StackOverflowClientImpl implements StackOverflowClient {
     private final WebClient stackOverflowWebClient;
+    private final Retry retry;
 
-    public StackOverflowClientImpl(WebClient stackOverflowWebClient) {
+    public StackOverflowClientImpl(WebClient stackOverflowWebClient, Retry retry) {
         this.stackOverflowWebClient = stackOverflowWebClient;
+        this.retry = retry;
     }
 
     @Override
@@ -19,6 +22,7 @@ public class StackOverflowClientImpl implements StackOverflowClient {
             .uri("/2.3/questions/" + stackOverflowQuestionId)
             .retrieve()
             .bodyToMono(StackOverflowFullResponse.class)
+            .retryWhen(retry)
             .map(StackOverflowFullResponse::questions)
             .map(List::getFirst)
             .block();

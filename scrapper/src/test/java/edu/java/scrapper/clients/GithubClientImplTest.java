@@ -13,6 +13,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.util.retry.Retry;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 
 @WireMockTest(httpPort = 8081)
@@ -23,7 +24,7 @@ class GithubClientImplTest {
     @BeforeEach
     void setUp() {
         WebClient webClient = WebClient.builder().baseUrl("http://localhost:8081").build();
-        client = new GithubClientImpl(webClient);
+        client = new GithubClientImpl(webClient, Retry.indefinitely());
     }
 
     @Test
