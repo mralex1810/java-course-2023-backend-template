@@ -2,9 +2,11 @@ package edu.java.scrapper.services.impls.jpa;
 
 import edu.java.scrapper.exceptions.AlreadyRegisteredChatException;
 import edu.java.scrapper.exceptions.ChatNotFoundException;
+import edu.java.scrapper.model.Chat;
 import edu.java.scrapper.model.jpa.JpaChat;
 import edu.java.scrapper.repository.JpaChatRepository;
 import edu.java.scrapper.services.TgChatService;
+import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -31,5 +33,10 @@ public class JpaTgChatServiceImpl implements TgChatService {
         } else {
             throw new ChatNotFoundException(String.format("Chat ID %d not found", tgChatId));
         }
+    }
+
+    @Override
+    public List<Chat> findAllRegisteredLink(long linkId) {
+        return jpaChatRepository.findAllChatsByLink(linkId).stream().map(JpaChat::convertToModel).toList();
     }
 }

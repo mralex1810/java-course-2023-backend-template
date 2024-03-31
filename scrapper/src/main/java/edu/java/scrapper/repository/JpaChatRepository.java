@@ -11,6 +11,9 @@ public interface JpaChatRepository extends JpaRepository<JpaChat, Long> {
     @Query("SELECT c.links FROM chats c WHERE c.id = :chatId")
     List<JpaLink> findAllLinksByChatId(@Param("chatId") Long chatId);
 
+    @Query("SELECT l.chats FROM links l WHERE l.id = :linkId")
+    List<JpaChat> findAllChatsByLink(@Param("linkId") Long linkId);
+
     @Query("SELECT COUNT(c) > 0 FROM chats c JOIN c.links l WHERE l.id = :linkId AND c.id = :chatId")
     Boolean existsByLinkIdAndChatId(@Param("linkId") Long linkId, @Param("chatId") Long chatId);
 }
