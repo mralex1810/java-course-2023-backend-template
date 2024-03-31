@@ -19,7 +19,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.net.URI;
-import java.util.List;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -98,7 +97,10 @@ public class ScrapperController {
                    schema = @Schema(type = "Integer"))
         Long tgChatId
     ) {
-        return ResponseEntity.ok().body(new ListLinksResponse(List.of(), 0));
+        var links = linkService.listAll(tgChatId).stream()
+            .map(it -> new LinkResponse(it.id(), URI.create(it.uri())))
+            .toList();
+        return ResponseEntity.ok().body(new ListLinksResponse(links, links.size()));
     }
 
     @Operation(summary = "Добавить отслеживание ссылки")

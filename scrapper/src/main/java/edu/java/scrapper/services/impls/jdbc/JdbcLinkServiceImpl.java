@@ -38,7 +38,7 @@ public class JdbcLinkServiceImpl implements LinkService {
             var lastUpdatedAt = linkUpdateCheckerService.lastUpdatedAtForLink(url);
             Link newLink = Link.create(url.toString(), lastUpdatedAt, LocalDateTime.now(), "admin");
             linkDAO.add(newLink);
-            return linkDAO.findByUrl(url.toString()).get();
+            linkO = linkDAO.findByUrl(url.toString());
         }
 
         Link link = linkO.get();

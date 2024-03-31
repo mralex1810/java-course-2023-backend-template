@@ -4,41 +4,40 @@ import edu.java.scrapper.model.Chat;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
+import lombok.RequiredArgsConstructor;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Repository;
 
 @Repository
+@RequiredArgsConstructor
 public class ChatDAO {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ChatDAO(JdbcTemplate jdbcTemplate) {
-        this.jdbcTemplate = jdbcTemplate;
-    }
+    private static final String SQL_ADD_CHAT = "INSERT INTO chats (id) VALUES (?)";
+    private static final String SQL_FIND_ALL_CHATS = "SELECT * FROM chats";
+    private static final String SQL_REMOVE_CHAT = "DELETE FROM chats WHERE id = ?";
+    private static final String SQL_FIND_BY_ID = "SELECT id FROM chats WHERE id = ?";
 
     public void add(Chat chat) {
-        String sql = "INSERT INTO chats (id) VALUES (?)";
-        jdbcTemplate.update(sql, chat.id());
+        jdbcTemplate.update(SQL_ADD_CHAT, chat.id());
     }
 
     public List<Chat> findAll() {
-        String sql = "SELECT * FROM chats";
-        return jdbcTemplate.queryForList(sql, Long.class)
+        return jdbcTemplate.queryForList(SQL_FIND_ALL_CHATS, Long.class)
             .stream()
             .map(Chat::new)
             .collect(Collectors.toList());
     }
 
     public void remove(Long id) {
-        String sql = "DELETE FROM chats WHERE id = ?";
-        jdbcTemplate.update(sql, id);
+        jdbcTemplate.update(SQL_REMOVE_CHAT, id);
     }
 
     public Optional<Chat> findById(Long id) {
-        String sql = "SELECT id FROM chats WHERE id = ?";
         try {
-            Long chatId = jdbcTemplate.queryForObject(sql, Long.class, id);
+            Long chatId = jdbcTemplate.queryForObject(SQL_FIND_BY_ID, Long.class, id);
             return Optional.ofNullable(chatId).map(Chat::new);
         } catch (EmptyResultDataAccessException e) {
             return Optional.empty();
