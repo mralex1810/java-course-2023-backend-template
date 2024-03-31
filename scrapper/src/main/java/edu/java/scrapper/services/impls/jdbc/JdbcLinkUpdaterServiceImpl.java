@@ -4,6 +4,7 @@ import edu.java.scrapper.configuration.ApplicationConfig;
 import edu.java.scrapper.dao.LinkDAO;
 import edu.java.scrapper.exceptions.UnsupportedLinkException;
 import edu.java.scrapper.model.Link;
+import edu.java.scrapper.services.BotNotifyService;
 import edu.java.scrapper.services.LinkUpdateCheckerService;
 import edu.java.scrapper.services.LinkUpdaterService;
 import java.net.URI;
@@ -20,13 +21,13 @@ public class JdbcLinkUpdaterServiceImpl implements LinkUpdaterService {
     private final LinkDAO linkDAO;
     private final ApplicationConfig.LinkCheckProperties linkCheckProperties;
     private final LinkUpdateCheckerService linkUpdateCheckerService;
+    private final BotNotifyService botNotifyService;
 
     @Override
     public int update() {
         return (int) linkDAO.findAllCheckedBefore(LocalDateTime.now().minus(linkCheckProperties.linkCheckInterval()))
             .stream()
-            .map(this::updateLink)
-            .filter(it -> it)
+            .filter(this::updateLink)
             .count();
     }
 
@@ -35,6 +36,7 @@ public class JdbcLinkUpdaterServiceImpl implements LinkUpdaterService {
         try {
             var lastUpdatedAt = linkUpdateCheckerService.lastUpdatedAtForLink(URI.create(link.uri()));
             linkDAO.updateLinkMeta(link.id(), lastUpdatedAt, LocalDateTime.now());
+            botNotifyService.tryNotifyBot(link.linkUpdatedAt(), lastUpdatedAt, link.id(), link.uri());
             return true;
         } catch (UnsupportedLinkException e) {
             log.warn("Unsupported link: " + link.uri(), e);

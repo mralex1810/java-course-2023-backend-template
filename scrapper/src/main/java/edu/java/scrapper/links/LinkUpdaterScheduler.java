@@ -18,6 +18,11 @@ public class LinkUpdaterScheduler {
 
     @Scheduled(fixedDelayString = "#{@scheduler.interval.toMillis()}")
     private void update() {
-        linkUpdaterService.update();
+        try {
+            linkUpdaterService.update();
+        } catch (RuntimeException e) {
+            log.error("Error on updating links: " + e.getMessage(), e);
+        }
+
     }
 }
