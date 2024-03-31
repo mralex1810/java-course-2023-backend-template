@@ -3,6 +3,7 @@ package edu.java.scrapper.configuration;
 import edu.java.scrapper.dao.ChatDAO;
 import edu.java.scrapper.dao.ChatLinkSettingDAO;
 import edu.java.scrapper.dao.LinkDAO;
+import edu.java.scrapper.services.BotNotifyService;
 import edu.java.scrapper.services.LinkService;
 import edu.java.scrapper.services.LinkUpdateCheckerService;
 import edu.java.scrapper.services.LinkUpdaterService;
@@ -32,15 +33,18 @@ public class JdbcAccessConfiguration {
     public LinkUpdaterService linkUpdaterService(
         LinkDAO linkDAO,
         ApplicationConfig.LinkCheckProperties linkCheckProperties,
-        LinkUpdateCheckerService linkUpdateCheckerService
+        LinkUpdateCheckerService linkUpdateCheckerService,
+        BotNotifyService botNotifyService
     ) {
-        return new JdbcLinkUpdaterServiceImpl(linkDAO, linkCheckProperties, linkUpdateCheckerService);
+        return new JdbcLinkUpdaterServiceImpl(linkDAO, linkCheckProperties, linkUpdateCheckerService, botNotifyService);
     }
 
     @Bean
     public TgChatService tgChatService(
-        ChatDAO chatDAO
+        ChatDAO chatDAO,
+        ChatLinkSettingDAO chatLinkSettingDAO
+
     ) {
-        return new JdbcTgChatServiceImpl(chatDAO);
+        return new JdbcTgChatServiceImpl(chatDAO, chatLinkSettingDAO);
     }
 }
