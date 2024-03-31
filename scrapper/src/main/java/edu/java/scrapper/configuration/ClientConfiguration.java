@@ -38,6 +38,7 @@ public class ClientConfiguration {
 
     @Value("${retry.strategy:CONSTANT}")
     private RetryStrategy retryStrategy;
+
     @Bean
     public GithubClient githubWebClient(
         Retry retry

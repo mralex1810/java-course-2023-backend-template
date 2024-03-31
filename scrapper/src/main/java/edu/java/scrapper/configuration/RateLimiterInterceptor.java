@@ -7,6 +7,7 @@ import io.github.bucket4j.grid.jcache.JCacheProxyManager;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import javax.cache.Cache;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.HandlerInterceptor;
 
@@ -39,7 +40,7 @@ public class RateLimiterInterceptor implements HandlerInterceptor {
         boolean consumed = bucket.tryConsume(1);
         if (!consumed) {
             // limit is exceeded
-            response.setStatus(429);
+            response.setStatus(HttpStatus.TOO_MANY_REQUESTS.value());
         }
         return consumed;
     }
