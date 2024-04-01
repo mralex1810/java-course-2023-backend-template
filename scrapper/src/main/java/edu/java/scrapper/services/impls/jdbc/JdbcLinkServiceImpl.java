@@ -16,10 +16,8 @@ import java.time.LocalDateTime;
 import java.util.Collection;
 import java.util.Optional;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-@Service
 @AllArgsConstructor
 public class JdbcLinkServiceImpl implements LinkService {
     private final LinkDAO linkDAO;

@@ -5,6 +5,7 @@ app:
     force-check-delay: 10s
   link-check-properties:
     link-check-interval: 10m
+  database-access-type: jdbc
 
 spring:
   application:
@@ -17,6 +18,11 @@ spring:
     username: postgres
     password: postgres
 
+
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
 
 server:
   port: 8080

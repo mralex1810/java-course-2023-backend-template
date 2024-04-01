@@ -14,11 +14,18 @@ public record ApplicationConfig(
     Scheduler scheduler,
     @NotNull
     @Bean
-    LinkCheckProperties linkCheckProperties
+    LinkCheckProperties linkCheckProperties,
+    @NotNull
+    @Bean
+    AccessType databaseAccessType
 ) {
     public record Scheduler(boolean enable, @NotNull Duration interval, @NotNull Duration forceCheckDelay) {
     }
 
     public record LinkCheckProperties(@NotNull Duration linkCheckInterval) {
+    }
+
+    public enum AccessType {
+        JDBC, JPA,
     }
 }
