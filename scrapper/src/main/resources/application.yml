@@ -3,16 +3,19 @@ app:
     enable: true
     interval: 10s
     force-check-delay: 10s
+  link-check-properties:
+    link-check-interval: 10m
 
 spring:
   application:
     name: scrapper
   liquibase:
     change-log: liquibase/master.xml
-    datasource:
-      url: jdbc:postgresql://localhost:5432/scrapper
-      username: postgres
-      password: postgres
+    enabled: false
+  datasource:
+    url: jdbc:postgresql://localhost:5432/scrapper
+    username: postgres
+    password: postgres
 
 
 server:
