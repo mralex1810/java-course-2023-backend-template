@@ -4,6 +4,8 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.model.TelegramAnswer;
 import edu.java.bot.model.UserMessage;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.util.Map;
 import java.util.Optional;
 import java.util.function.Function;
@@ -17,10 +19,12 @@ public class TelegramRequestServiceImpl implements TelegramRequestService {
     );
     private final TelegramBot telegramBot;
     private final Map<String, Function<UserMessage, TelegramAnswer>> messageRoutes;
+    private final Counter requestsCounter;
 
     public TelegramRequestServiceImpl(
         TelegramBot telegramBot,
-        TelegramRequestRoutesService telegramRequestRoutesService
+        TelegramRequestRoutesService telegramRequestRoutesService,
+        MeterRegistry meterRegistry
     ) {
         this.telegramBot = telegramBot;
         messageRoutes = Map.of(
@@ -30,14 +34,19 @@ public class TelegramRequestServiceImpl implements TelegramRequestService {
             "/untrack", telegramRequestRoutesService::untrack,
             "/list", telegramRequestRoutesService::list
         );
+        this.requestsCounter = meterRegistry.counter("telegram.requests.processed");
     }
 
     @Override
     public void processMessage(UserMessage message) {
         var route = findRoute(message.text());
-        var answer = route.map(f -> f.apply(message))
+        var answer = route
+            .map(f -> f.apply(message))
             .orElse(FALLBACK_MESSAGE);
-        answer.text().ifPresent(text -> telegramBot.execute(new SendMessage(message.chatId(), text)));
+        answer.text().ifPresent(text -> {
+            telegramBot.execute(new SendMessage(message.chatId(), text));
+            requestsCounter.increment();
+        });
     }
 
     private Optional<Function<UserMessage, TelegramAnswer>> findRoute(String text) {
