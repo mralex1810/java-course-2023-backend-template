@@ -43,7 +43,6 @@ jobs:
           push: true
           tags: ghcr.io/${{ github.repository }}/bot:latest
 
-
       - id: jacoco
         uses: madrapps/jacoco-report@v1.6.1
         if: ( github.event_name != 'workflow_dispatch' )
