@@ -16,3 +16,19 @@ logging:
 springdoc:
   swagger-ui:
     path: /swagger-ui
+
+management:
+  endpoints:
+    web:
+      base-path: /
+      exposure:
+        include: "info, health, prometheus"
+      path-mapping:
+        prometheus: metrics
+  retrofit:
+    applicationProperty: application=${spring.application.name}
+    add-application-as-prefix: true
+  server:
+    port: 8091
+  enable:
+    http.server.requests: true

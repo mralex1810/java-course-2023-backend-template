@@ -4,6 +4,8 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.request.SendMessage;
 import edu.java.bot.model.TelegramAnswer;
 import edu.java.bot.model.UserMessage;
+import io.micrometer.core.instrument.Counter;
+import io.micrometer.core.instrument.MeterRegistry;
 import java.util.Optional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -29,7 +31,13 @@ class TelegramRequestServiceImplTest {
     void setUp() {
         telegramBot = mock(TelegramBot.class);
         telegramRequestRoutesService = mock(TelegramRequestRoutesService.class);
-        telegramRequestService = new TelegramRequestServiceImpl(telegramBot, telegramRequestRoutesService);
+        var meterRegistry = mock(MeterRegistry.class);
+        when(meterRegistry.counter(any())).thenReturn(mock(Counter.class));
+        telegramRequestService = new TelegramRequestServiceImpl(
+            telegramBot,
+            telegramRequestRoutesService,
+            meterRegistry
+        );
 
     }
 
