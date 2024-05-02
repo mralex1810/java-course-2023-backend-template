@@ -7,12 +7,13 @@ import edu.java.scrapper.clients.github.GithubClientImpl;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.Duration;
 import java.time.Month;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.reactive.function.client.WebClient;
-import org.springframework.web.reactive.function.client.WebClientResponseException;
+import reactor.util.retry.Retry;
 import static com.github.tomakehurst.wiremock.client.WireMock.aResponse;
 
 @WireMockTest(httpPort = 8081)
@@ -23,7 +24,7 @@ class GithubClientImplTest {
     @BeforeEach
     void setUp() {
         WebClient webClient = WebClient.builder().baseUrl("http://localhost:8081").build();
-        client = new GithubClientImpl(webClient);
+        client = new GithubClientImpl(webClient, Retry.fixedDelay(1, Duration.ZERO));
     }
 
     @Test
@@ -52,7 +53,7 @@ class GithubClientImplTest {
                 .withStatus(500)));
 
         Assertions.assertThrows(
-            WebClientResponseException.class,
+            RuntimeException.class,
             () -> client.getRepository(new GithubClient.GithubRepository("user", "repo"))
         );
     }

@@ -6,13 +6,16 @@ import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.server.ResponseStatusException;
 import reactor.core.publisher.Mono;
+import reactor.util.retry.Retry;
 
 public class BotClientImpl implements BotClient {
 
     private final WebClient webClient;
+    private final Retry retry;
 
-    public BotClientImpl(WebClient webClient) {
+    public BotClientImpl(WebClient webClient, Retry retry) {
         this.webClient = webClient;
+        this.retry = retry;
     }
 
     private <T> Mono<T> toResponseBodyMono(ClientResponse clientResponse, Class<T> clazz) {
@@ -33,6 +36,7 @@ public class BotClientImpl implements BotClient {
             .uri("/updates")
             .bodyValue(linkUpdate)
             .exchangeToMono(clientResponse -> toResponseBodyMono(clientResponse, Void.class))
+            .retryWhen(retry)
             .block();
     }
 }
